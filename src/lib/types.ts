@@ -2,7 +2,7 @@
 export interface MenuItem {
   id: string;
   name: string;
-  description: string;
+  description?: string;
   price: number;
   photoUrl?: string;
   dataAiHint?: string;
@@ -11,7 +11,7 @@ export interface MenuItem {
 export interface Restaurant {
   id: string;
   name: string;
-  photoUrl: string;
+  photoUrl?: string;
   rating: number;
   cuisine: string;
   menu: MenuItem[];
@@ -25,7 +25,7 @@ export enum UserRole {
 }
 
 export interface User {
-  id: string;
+  id: number;
   firstName: string;
   lastName: string;
   email: string;

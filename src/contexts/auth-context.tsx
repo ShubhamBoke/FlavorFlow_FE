@@ -21,6 +21,7 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<AuthUser | null>(null);
@@ -39,42 +40,55 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password?: string, roleInput?: UserRole) => {
+  const login = async (email: string, password?: string) => {
     // In a real app, you'd validate credentials against a backend.
-    // For mock, we'll use the email to determine role if not provided, or default.
-    let determinedRole = UserRole.Member;
-    if (roleInput) {
-      determinedRole = roleInput;
-    } else if (email.includes('admin@')) {
-      determinedRole = UserRole.Admin;
-    } else if (email.includes('manager@')) {
-      determinedRole = UserRole.Manager;
+    const res = await fetch(`${BASE_URL}/authenticate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: email,
+        password: password
+      }),
+    });
+
+    if (!res.ok) {
+      const msg = await res.text();
+      throw new Error(msg || "Login Failed");
     }
-    
-    const mockUser: AuthUser = {
-      id: '1', // Static ID for simplicity in mock
-      firstName: email.split('@')[0] || 'Demo',
-      lastName: 'User',
-      email: email,
-      role: determinedRole,
-    };
-    localStorage.setItem('flavorflow_user', JSON.stringify(mockUser));
-    setUser(mockUser);
+
+    const data = await res.json();
+    //Save JWT token
+    localStorage.setItem('jwt_token', data.jwt);
+    setUser(data.user);
     router.push('/'); // Redirect to home after login
   };
 
   const logout = async () => {
-    localStorage.removeItem('flavorflow_user');
+    localStorage.removeItem('jwt_token');
     setUser(null);
     router.push('/login'); // Redirect to login after logout
   };
 
   const register = async (firstName: string, lastName: string, email: string, password?: string, role: UserRole = UserRole.Member) => {
     // In a real app, you'd send this to a backend.
-    const mockUser: AuthUser = { id: Date.now().toString(), firstName, lastName, email, role };
-    localStorage.setItem('flavorflow_user', JSON.stringify(mockUser));
-    setUser(mockUser);
-    router.push('/'); // Redirect to home after registration
+    const res = await fetch(`${BASE_URL}/register${role}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        firstName: firstName,
+        lastName: lastName,
+        username: email,
+        password: password,
+        role: role,
+      }),
+    });
+  
+    if (!res.ok) {
+      const msg = await res.text();
+      throw new Error("Registration Failed, Username already taken");
+    }
+    router.push('/login');
+    return res.text();
   };
   
   return (
