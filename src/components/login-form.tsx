@@ -63,7 +63,7 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md mx-auto shadow-xl">
       <CardHeader>
-        <CardTitle className="font-headline text-3xl text-center text-primary">Login to FlavorFlow</CardTitle>
+        <CardTitle className="font-headline text-2xl md:text-3xl text-center text-primary">Login to FlavorFlow</CardTitle>
         <CardDescription className="text-center">
           Enter your credentials to access your account.
         </CardDescription>

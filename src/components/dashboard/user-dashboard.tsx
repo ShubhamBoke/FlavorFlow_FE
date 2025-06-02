@@ -29,7 +29,7 @@ export function UserDashboard() {
     <div className="space-y-8">
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle className="font-headline text-3xl">Welcome, {user.firstName}!</CardTitle>
+          <CardTitle className="font-headline text-2xl md:text-3xl">Welcome, {user.firstName}!</CardTitle>
           <CardDescription>Here's what you can do based on your role: <span className="font-semibold text-primary">{user.role}</span></CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

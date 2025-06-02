@@ -70,7 +70,7 @@ export function RegisterForm() {
   return (
     <Card className="w-full max-w-md mx-auto shadow-xl">
       <CardHeader>
-        <CardTitle className="font-headline text-3xl text-center text-primary">Create an Account</CardTitle>
+        <CardTitle className="font-headline text-2xl md:text-3xl text-center text-primary">Create an Account</CardTitle>
         <CardDescription className="text-center">
           Join FlavorFlow to start your culinary adventure.
         </CardDescription>

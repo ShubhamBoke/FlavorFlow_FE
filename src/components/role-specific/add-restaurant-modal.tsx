@@ -32,23 +32,23 @@ export function AddRestaurantModal() {
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
+          <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+            <Label htmlFor="name" className="sm:text-right">
               Name
             </Label>
-            <Input id="name" placeholder="Pizza Palace" className="col-span-3" />
+            <Input id="name" placeholder="Pizza Palace" className="col-span-1 sm:col-span-3" />
           </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="cuisine" className="text-right">
+          <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+            <Label htmlFor="cuisine" className="sm:text-right">
               Cuisine
             </Label>
-            <Input id="cuisine" placeholder="Italian" className="col-span-3" />
+            <Input id="cuisine" placeholder="Italian" className="col-span-1 sm:col-span-3" />
           </div>
-           <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="photoUrl" className="text-right">
+           <div className="grid grid-cols-1 sm:grid-cols-4 items-start sm:items-center gap-2 sm:gap-4">
+            <Label htmlFor="photoUrl" className="sm:text-right">
               Photo URL
             </Label>
-            <Input id="photoUrl" placeholder="https://placehold.co/600x400.png" className="col-span-3" />
+            <Input id="photoUrl" placeholder="https://placehold.co/600x400.png" className="col-span-1 sm:col-span-3" />
           </div>
         </div>
         <DialogFooter>

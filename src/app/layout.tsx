@@ -29,10 +29,10 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <GlobalHeader />
-            <main className="flex-grow container py-8">
+            <main className="flex-grow container py-4 sm:py-8">
               {children}
             </main>
-            <footer className="py-6 text-center text-muted-foreground border-t">
+            <footer className="py-4 sm:py-6 text-center text-muted-foreground border-t">
               © {new Date().getFullYear()} FlavorFlow. All rights reserved.
             </footer>
             <CartModal />

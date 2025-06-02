@@ -45,12 +45,12 @@ export function GlobalHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
+      <div className="container flex h-16 items-center px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center space-x-2 mr-auto">
           <Utensils className="h-7 w-7 text-primary" />
-          <span className="font-headline text-2xl font-bold text-primary">FlavorFlow</span>
+          <span className="font-headline text-xl sm:text-2xl font-bold text-primary">FlavorFlow</span>
         </Link>
-        <nav className="flex items-center space-x-4">
+        <nav className="flex items-center space-x-2 sm:space-x-4">
           <Button 
             variant="ghost" 
             onClick={handleCartClick} 

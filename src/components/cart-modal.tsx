@@ -25,31 +25,31 @@ export function CartModal() {
 
   return (
     <Sheet open={isCartOpen} onOpenChange={toggleCart}>
-      <SheetContent className="flex flex-col sm:max-w-lg">
-        <SheetHeader className="px-6 pt-6">
-          <SheetTitle className="font-headline text-2xl">Your Cart ({totalItems})</SheetTitle>
+      <SheetContent className="flex flex-col w-full sm:max-w-lg">
+        <SheetHeader className="px-4 sm:px-6 pt-6">
+          <SheetTitle className="font-headline text-xl sm:text-2xl">Your Cart ({totalItems})</SheetTitle>
         </SheetHeader>
-        <ScrollArea className="flex-grow px-6">
+        <ScrollArea className="flex-grow px-4 sm:px-6">
           {cartItems.length === 0 ? (
             <p className="text-muted-foreground text-center py-10">Your cart is empty.</p>
           ) : (
             <div className="space-y-4 py-4">
               {cartItems.map((item) => (
-                <div key={item.id} className="flex items-center space-x-4 p-2 rounded-lg border bg-card">
+                <div key={item.id} className="flex items-center space-x-2 sm:space-x-4 p-2 rounded-lg border bg-card">
                   <Image
                     src={item.photoUrl || "https://placehold.co/64x64.png"}
                     alt={item.name}
                     width={64}
                     height={64}
-                    className="rounded-md object-cover"
+                    className="rounded-md object-cover flex-shrink-0"
                     data-ai-hint={item.dataAiHint || "food item"}
                   />
-                  <div className="flex-grow">
-                    <h4 className="font-semibold">{item.name}</h4>
+                  <div className="flex-grow min-w-0">
+                    <h4 className="font-semibold truncate">{item.name}</h4>
                     <p className="text-sm text-muted-foreground">${item.price.toFixed(2)}</p>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Button variant="ghost" size="icon" onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1}>
+                  <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
+                    <Button variant="ghost" size="icon" onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1} className="h-8 w-8 sm:h-10 sm:w-10">
                       <MinusCircle className="h-4 w-4" />
                     </Button>
                     <Input
@@ -59,14 +59,14 @@ export function CartModal() {
                         const val = parseInt(e.target.value);
                         if (!isNaN(val)) updateQuantity(item.id, val)}
                       }
-                      className="w-12 h-8 text-center"
+                      className="w-10 h-8 sm:w-12 sm:h-10 text-center"
                       min="1"
                     />
-                    <Button variant="ghost" size="icon" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                    <Button variant="ghost" size="icon" onClick={() => updateQuantity(item.id, item.quantity + 1)} className="h-8 w-8 sm:h-10 sm:w-10">
                       <PlusCircle className="h-4 w-4" />
                     </Button>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => removeFromCart(item.id)} className="text-destructive">
+                  <Button variant="ghost" size="icon" onClick={() => removeFromCart(item.id)} className="text-destructive h-8 w-8 sm:h-10 sm:w-10">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
@@ -76,8 +76,8 @@ export function CartModal() {
         </ScrollArea>
         {cartItems.length > 0 && (
           <>
-            <div className="px-6 py-4 border-t">
-              <Label htmlFor="payment-method" className="block text-base font-semibold mb-2">Payment Method</Label>
+            <div className="px-4 sm:px-6 py-4 border-t">
+              <Label htmlFor="payment-method" className="block text-sm sm:text-base font-semibold mb-2">Payment Method</Label>
               <Select value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod}>
                 <SelectTrigger id="payment-method" className="w-full">
                   <SelectValue placeholder="Select a payment method" />
@@ -92,8 +92,8 @@ export function CartModal() {
               </Select>
             </div>
             
-            <SheetFooter className="px-6 pt-4 pb-6 space-y-4 border-t">
-              <div className="flex justify-between items-center font-semibold text-lg">
+            <SheetFooter className="px-4 sm:px-6 pt-4 pb-6 space-y-4 border-t">
+              <div className="flex justify-between items-center font-semibold text-base sm:text-lg">
                 <span>Total:</span>
                 <span>${totalPrice.toFixed(2)}</span>
               </div>
