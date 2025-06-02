@@ -9,9 +9,19 @@ import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetClose } from "@/components/ui/sheet";
 import Image from "next/image";
 import { Trash2, PlusCircle, MinusCircle } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useState } from "react";
 
 export function CartModal() {
   const { cartItems, removeFromCart, updateQuantity, totalItems, totalPrice, isCartOpen, toggleCart, clearCart } = useCart();
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("credit-card");
+
+  const paymentMethods = [
+    { value: "credit-card", label: "Credit Card" },
+    { value: "paypal", label: "PayPal" },
+    { value: "google-pay", label: "Google Pay" },
+  ];
 
   return (
     <Sheet open={isCartOpen} onOpenChange={toggleCart}>
@@ -45,7 +55,10 @@ export function CartModal() {
                     <Input
                       type="number"
                       value={item.quantity}
-                      onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        if (!isNaN(val)) updateQuantity(item.id, val)}
+                      }
                       className="w-12 h-8 text-center"
                       min="1"
                     />
@@ -63,8 +76,23 @@ export function CartModal() {
         </ScrollArea>
         {cartItems.length > 0 && (
           <>
-            <Separator className="my-4" />
-            <SheetFooter className="px-6 pb-6 space-y-4">
+            <div className="px-6 py-4 border-t">
+              <Label htmlFor="payment-method" className="block text-base font-semibold mb-2">Payment Method</Label>
+              <Select value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod}>
+                <SelectTrigger id="payment-method" className="w-full">
+                  <SelectValue placeholder="Select a payment method" />
+                </SelectTrigger>
+                <SelectContent>
+                  {paymentMethods.map(method => (
+                    <SelectItem key={method.value} value={method.value}>
+                      {method.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <SheetFooter className="px-6 pt-4 pb-6 space-y-4 border-t">
               <div className="flex justify-between items-center font-semibold text-lg">
                 <span>Total:</span>
                 <span>${totalPrice.toFixed(2)}</span>

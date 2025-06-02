@@ -3,10 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer base {
   :root {
     --background: 36 56% 93%; /* Light Cream #F8F0E3 */
@@ -108,5 +104,6 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    /* font-family removed as it's handled by Tailwind 'font-body' class in layout.tsx */
   }
 }

@@ -16,15 +16,31 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
+import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 export function GlobalHeader() {
   const { user, logout, loading } = useAuth();
   const { totalItems, toggleCart } = useCart();
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleLogout = async () => {
     await logout();
+  };
+
+  const handleCartClick = () => {
+    if (loading) return; // Prevent action while auth state is loading
+
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to view your cart.",
+        variant: "destructive",
+      });
+      return;
+    }
+    toggleCart();
   };
 
   return (
@@ -35,7 +51,13 @@ export function GlobalHeader() {
           <span className="font-headline text-2xl font-bold text-primary">FlavorFlow</span>
         </Link>
         <nav className="flex items-center space-x-4">
-          <Button variant="ghost" onClick={toggleCart} className="relative">
+          <Button 
+            variant="ghost" 
+            onClick={handleCartClick} 
+            className="relative"
+            disabled={loading} // Disable button only when auth is loading
+            aria-disabled={!user && !loading} // Accessibility hint
+          >
             <ShoppingCart className="h-5 w-5" />
             {totalItems > 0 && (
               <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
