@@ -8,9 +8,11 @@ import { ManagePaymentMethodsModal } from "@/components/role-specific/manage-pay
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Archive, Settings, ShoppingBag } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function UserDashboard() {
   const { user, loading } = useAuth();
+  const router = useRouter();
 
   if (loading) {
     return (
@@ -38,24 +40,14 @@ export function UserDashboard() {
             {/* Member specific actions */}
             {(user.role === UserRole.Member || user.role === UserRole.Manager || user.role === UserRole.Admin) && (
               <>
-                <Button variant="outline"><ShoppingBag className="mr-2 h-4 w-4" /> My Orders</Button>
+                <Button variant="outline" onClick={() => {router.push('/orders')}}><ShoppingBag className="mr-2 h-4 w-4" /> My Orders</Button>
                 <ManagePaymentMethodsModal />
               </>
             )}
 
             {/* Manager specific actions */}
             {(user.role === UserRole.Manager || user.role === UserRole.Admin) && (
-              <>
                 <AddRestaurantModal />
-                <Button variant="outline"><Archive className="mr-2 h-4 w-4" /> Manage All Orders</Button>
-              </>
-            )}
-
-            {/* Admin specific actions */}
-            {user.role === UserRole.Admin && (
-              <>
-                 <Button variant="outline"><Settings className="mr-2 h-4 w-4" /> Site Settings</Button>
-              </>
             )}
           </div>
           {/* Placeholder for CancelOrderModal if it needs to be generally available or triggered by specific order context */}

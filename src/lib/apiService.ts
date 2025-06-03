@@ -171,3 +171,82 @@ export const addRestaurant = async (name: string, cuisine: string) => {
     throw error; // Re-throw the error so calling code can handle it
   }
 };
+
+export const getOrderList = async () => {
+  try {
+    const jwtToken = localStorage.getItem('jwt_token');
+    const headers: HeadersInit = { "Content-Type": "application/json" };
+    if (jwtToken) {
+      headers['Authorization'] = `Bearer ${jwtToken}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/getOrderList`, {
+      method: "GET",
+      headers: headers
+    });
+
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      throw new Error(message);
+    }
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error("Failed to failed to fetch order list:", error);
+    throw error; // Re-throw the error so calling code can handle it
+  }
+};
+
+export const placeOrder = async (paymentMethodId: number) => {
+  try {
+    const jwtToken = localStorage.getItem('jwt_token');
+    const headers: HeadersInit = { "Content-Type": "application/json" };
+    if (jwtToken) {
+      headers['Authorization'] = `Bearer ${jwtToken}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/placeOrder?paymentMethodId=${paymentMethodId}`, {
+      method: "POST",
+      headers: headers
+    });
+
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      throw new Error(message);
+    }
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error("Failed to place order:", error);
+    throw error; // Re-throw the error so calling code can handle it
+  }
+};
+
+export const getPaymentMethodList = async () => {
+  try {
+    const jwtToken = localStorage.getItem('jwt_token');
+    const headers: HeadersInit = { "Content-Type": "application/json" };
+    if (jwtToken) {
+      headers['Authorization'] = `Bearer ${jwtToken}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/getPaymentMethodList`, {
+      method: "GET",
+      headers: headers
+    });
+
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      throw new Error(message);
+    }
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error("Failed to failed to fetch Payments Method List:", error);
+    throw error; // Re-throw the error so calling code can handle it
+  }
+};
+

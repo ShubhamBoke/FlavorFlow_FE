@@ -9,8 +9,8 @@ import { Trash2, PlusCircle, MinusCircle } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
-import { fetchCartDetails, removeCartItem, updateCartItemQuantity } from "@/lib/apiService";
-import { Cart, CartItem } from "@/lib/types";
+import { fetchCartDetails, removeCartItem, updateCartItemQuantity, placeOrder, getPaymentMethodList } from "@/lib/apiService";
+import { Cart, PaymentMethod} from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
@@ -23,7 +23,8 @@ interface CartModalProps {
 export function CartModal({ isOpen, onToggle }: CartModalProps) {
   
   const [cart, setCart] = useState<Cart | null>(null);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("credit-card");
+  const [paymentMethodList, setPaymentMethodList] = useState<PaymentMethod[]>([{id: 1, name: "COD"}]);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>({id: 1, name: "COD"});
   const { toast } = useToast();
 
   useEffect(() => {
@@ -38,7 +39,19 @@ export function CartModal({ isOpen, onToggle }: CartModalProps) {
           toast({ title: "Error fetching cart", description: "Could not load cart details.", variant: "destructive" });
         }
       };
+
+      const fetchPaymentMethodList = async () => {
+        try {
+          const paymentMethodList = await getPaymentMethodList();
+          setPaymentMethodList(paymentMethodList);
+          setSelectedPaymentMethod(paymentMethodList[0]);
+        } catch (error) {
+          console.error("Failed to fetch payment methods:", error);
+        }
+      }
+
       getCart();
+      fetchPaymentMethodList();
     }
   }, [isOpen, toast]);
 
@@ -105,11 +118,21 @@ export function CartModal({ isOpen, onToggle }: CartModalProps) {
     }
   };
   
-  const paymentMethods = [
-    { value: "credit-card", label: "Credit Card" },
-    { value: "paypal", label: "PayPal" },
-    { value: "google-pay", label: "Google Pay" },
-  ];
+  const handleCheckout = async () => {
+    if (!cart) {
+      toast({ title: "Cart is empty" });
+      return;
+    }
+
+    try {
+      const paymentMethodId = selectedPaymentMethod.id;
+      await placeOrder(paymentMethodId);
+    } catch (error) {
+      console.error("Failed to place order:", error);
+      toast({ title: "Error placing order", description: "Could not place your order.", variant: "destructive" });
+    }
+
+  }
 
   return (
     <Sheet open={isOpen} onOpenChange={onToggle}>
@@ -136,8 +159,6 @@ export function CartModal({ isOpen, onToggle }: CartModalProps) {
                     <p className="text-sm text-muted-foreground">${item.menuItem.price.toFixed(2)}</p>
                   </div>
                   <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0 ml-auto">
-                    {/* Placeholder functions - replace with actual API calls */}
-                    {/* You'll need to implement the logic to update quantity using updateCartItemQuantity */}
                     <Button variant="ghost" size="icon" onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1} className="h-8 w-8 sm:h-10 sm:w-10">
                       <MinusCircle className="h-4 w-4" />
                     </Button>
@@ -165,14 +186,19 @@ export function CartModal({ isOpen, onToggle }: CartModalProps) {
           <>
             <div className="px-4 sm:px-6 py-4 border-t">
               <Label htmlFor="payment-method" className="block text-sm sm:text-base font-semibold mb-2">Payment Method</Label>
-              <Select value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod}>
+              <Select value={selectedPaymentMethod.name} onValueChange={(value: string) => {
+                const selectedMethod = paymentMethodList.find(method => method.name === value);
+                if (selectedMethod) {
+                  setSelectedPaymentMethod(selectedMethod);
+                }
+                }}>
                 <SelectTrigger id="payment-method" className="w-full">
                   <SelectValue placeholder="Select a payment method" />
                 </SelectTrigger>
                 <SelectContent>
-                  {paymentMethods.map(method => (
-                    <SelectItem key={method.value} value={method.value}>
-                      {method.label}
+                  {paymentMethodList.map(method => (
+                    <SelectItem key={method.id} value={method.name}>
+                      {method.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -186,7 +212,7 @@ export function CartModal({ isOpen, onToggle }: CartModalProps) {
               </div>
               <Button onClick={clearCart} variant="outline" className="w-full">Clear Cart</Button>
               <SheetClose asChild>
-                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Proceed to Checkout</Button>
+                <Button onClick={handleCheckout} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Checkout</Button>
               </SheetClose>
             </SheetFooter>
           </>

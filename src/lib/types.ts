@@ -25,6 +25,11 @@ export enum UserRole {
   Admin = "ROLE_ADMIN",
 }
 
+export interface PaymentMethod {
+  id: number,
+  name: string
+}
+
 export interface User {
   id: number;
   firstName: string;
@@ -45,5 +50,15 @@ export interface Cart {
   total: number;
   enabled: boolean;
   cartItemList: CartItem[];
+}
+
+export interface Order {
+  id: string;
+  cart: Cart;
+  paymentMethod: {
+    id: number;
+    name: string;
+  };
+  orderStatus: string;
 }
 
