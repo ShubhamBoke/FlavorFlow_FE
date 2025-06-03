@@ -335,3 +335,34 @@ export const updateOrderStatus = async (orderId: number, orderStatus: string) =>
   }
 };
 
+
+export const addMenuItem = async (restaurantId: number, name: string, price: number, rating: number) => {
+  try {
+    const jwtToken = localStorage.getItem('jwt_token');
+    const headers: HeadersInit = { "Content-Type": "application/json" };
+    if (jwtToken) {
+      headers['Authorization'] = `Bearer ${jwtToken}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/admin/addMenuItem?restaurantId=${restaurantId}`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        name: name,
+        price: price,
+        rating: rating
+      })
+    });
+
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      throw new Error(message);
+    }
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error("Failed to update Order Status", error);
+    throw error; // Re-throw the error so calling code can handle it
+  }
+};

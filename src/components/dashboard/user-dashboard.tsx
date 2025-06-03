@@ -5,6 +5,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { UserRole } from "@/lib/types";
 import { AddRestaurantModal } from "@/components/role-specific/add-restaurant-modal";
 import { ManagePaymentMethodsModal } from "@/components/role-specific/manage-payment-methods-modal";
+import { AddMenuItemModal } from "@/components/role-specific/add-menu-item-modal";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Archive, Settings, ShoppingBag } from "lucide-react";
@@ -47,7 +48,10 @@ export function UserDashboard() {
 
             {/* Manager specific actions */}
             {(user.role === UserRole.Manager || user.role === UserRole.Admin) && (
+              <>
+                <AddMenuItemModal />
                 <AddRestaurantModal />
+              </>
             )}
           </div>
           {/* Placeholder for CancelOrderModal if it needs to be generally available or triggered by specific order context */}
