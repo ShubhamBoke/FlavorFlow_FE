@@ -4,8 +4,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
-import { useCart } from "@/contexts/cart-context";
-import { ShoppingCart, User, LogIn, LogOut, Utensils, Settings } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
@@ -17,16 +15,23 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
+import { ShoppingCart, User, LogIn, LogOut, Utensils, Settings } from "lucide-react";
+import { useEffect, useState } from "react";
+import { fetchCartDetails } from "@/lib/apiService"; // Assuming this function exists
+import { Cart } from "@/lib/types"; // Assuming you have a Cart type
 
 export function GlobalHeader() {
   const { user, logout, loading } = useAuth();
-  const { totalItems, toggleCart } = useCart();
   const router = useRouter();
   const { toast } = useToast();
+  const [cartItemCount, setCartItemCount] = useState(0);
+
+  // Assuming toggleCart is managed elsewhere, e.g., a global UI state context
+  // Replace with your actual toggleCart implementation if needed
+  const toggleCart = () => { console.log("Toggle cart placeholder"); };
 
   const handleLogout = async () => {
-    await logout();
+    await logout(); 
   };
 
   const handleCartClick = () => {
@@ -42,6 +47,19 @@ export function GlobalHeader() {
     }
     toggleCart();
   };
+
+  useEffect(() => {
+    const getCartItemCount = async () => {
+      if (user) {
+        try {
+          const cart: Cart = await fetchCartDetails();
+          setCartItemCount(cart.cartItemList.reduce((total, item) => total + item.quantity, 0));
+        } catch (error) {
+          console.error("Failed to fetch cart details:", error);
+        }
+      } else { setCartItemCount(0); }
+    }; getCartItemCount();
+  });
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -59,9 +77,9 @@ export function GlobalHeader() {
             aria-disabled={!user && !loading} // Accessibility hint
           >
             <ShoppingCart className="h-5 w-5" />
-            {totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                {totalItems}
+            {cartItemCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                {cartItemCount}
               </span>
             )}
             <span className="sr-only">Open Cart</span>

@@ -1,4 +1,3 @@
-
 "use client";
 import type { UserRole } from '@/lib/types';
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -29,15 +28,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('flavorflow_user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        localStorage.removeItem('flavorflow_user');
+ const checkAuth = async () => {
+      const jwtToken = localStorage.getItem('jwt_token');
+      const storedUser = localStorage.getItem('stored_user') || '';
+      if (jwtToken) {
+        // In a real application, you would typically validate the token with your backend
+        // To keep it simple for this example, we'll assume the presence of a token means authenticated
+        // You might want to add a backend call here to get user details based on the token if needed
+
+        // Since the login saves user info in local storage as 'flavorflow_user', let's use that for now
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          console.error("Error parsing stored user:", e);
+          localStorage.removeItem('flavorflow_user');
+          localStorage.removeItem('jwt_token'); // Remove token if user data is invalid
+        }
       }
-    }
-    setLoading(false);
+ setLoading(false);
+    };
+ checkAuth();
   }, []);
 
   const login = async (email: string, password?: string) => {
@@ -59,6 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const data = await res.json();
     //Save JWT token
     localStorage.setItem('jwt_token', data.jwt);
+    localStorage.setItem('stored_user', JSON.stringify(data.user));
     setUser(data.user);
     router.push('/'); // Redirect to home after login
   };

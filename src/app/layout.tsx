@@ -2,7 +2,6 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { GlobalHeader } from '@/components/global-header';
-import { CartProvider } from '@/contexts/cart-context';
 import { AuthProvider } from '@/contexts/auth-context';
 import { Toaster } from "@/components/ui/toaster";
 import { CartModal } from '@/components/cart-modal';
@@ -27,7 +26,6 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased min-h-screen flex flex-col">
         <AuthProvider>
-          <CartProvider>
             <GlobalHeader />
             <main className="flex-grow container py-4 sm:py-8">
               {children}
@@ -37,7 +35,6 @@ export default function RootLayout({
             </footer>
             <CartModal />
             <Toaster />
-          </CartProvider>
         </AuthProvider>
       </body>
     </html>

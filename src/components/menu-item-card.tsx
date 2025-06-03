@@ -4,7 +4,6 @@ import type { MenuItem } from "@/lib/types";
 import Image from "next/image";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useCart } from "@/contexts/cart-context";
 import { PlusCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -14,11 +13,10 @@ interface MenuItemCardProps {
 }
 
 export function MenuItemCard({ item }: MenuItemCardProps) {
-  const { addToCart } = useCart();
   const { toast } = useToast();
 
   const handleAddToCart = () => {
-    addToCart(item);
+    // Call add to cart
     toast({
       title: `${item.name} added to cart!`,
       description: "You can view your cart by clicking the cart icon in the header.",

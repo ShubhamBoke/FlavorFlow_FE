@@ -1,27 +1,28 @@
 
 export interface MenuItem {
-  id: string;
+  id: number;
   name: string;
   description?: string;
   price: number;
+  rating: number;
   photoUrl?: string;
   dataAiHint?: string;
 }
 
 export interface Restaurant {
-  id: string;
+  id: number;
   name: string;
   photoUrl?: string;
   rating: number;
   cuisine: string;
-  menu: MenuItem[];
+  menuItemList: MenuItem[];
   dataAiHint?: string;
 }
 
 export enum UserRole {
-  Member = "Member",
-  Manager = "Manager",
-  Admin = "Admin",
+  Member = "ROLE_MEMBER",
+  Manager = "ROLE_MANAGER",
+  Admin = "ROLE_ADMIN",
 }
 
 export interface User {
@@ -32,6 +33,17 @@ export interface User {
   role: UserRole;
 }
 
-export interface CartItem extends MenuItem {
+export interface CartItem {
+ id: number;
+ menuItem: MenuItem;
   quantity: number;
+ subtotal: number;
 }
+
+export interface Cart {
+  id: number;
+  total: number;
+  enabled: boolean;
+  cartItemList: CartItem[];
+}
+

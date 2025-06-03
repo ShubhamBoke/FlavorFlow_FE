@@ -1,20 +1,36 @@
 
+"use client";
 import { RestaurantList } from "@/components/restaurant-list";
-import { dummyRestaurants } from "@/lib/data";
-import type { Metadata } from 'next';
-
-export const metadata: Metadata = {
-  title: 'Explore Restaurants | FlavorFlow',
-  description: 'Browse our selection of fantastic restaurants and find your next meal.',
-};
+import { useState, useEffect } from 'react';
+import { fetchRestaurants } from "@/lib/apiService";
 
 export default function RestaurantsPage() {
   // In a real app, you might fetch this data
-  const restaurants = dummyRestaurants;
+  const [restaurants, setRestaurants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getRestaurants = async () => {
+      try {
+        const data = await fetchRestaurants();
+        setRestaurants(data);
+      } catch (err) {
+        setError('Failed to fetch restaurants.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getRestaurants();
+  }, []);
 
   return (
     <div className="space-y-12">
-      <RestaurantList restaurants={restaurants} />
+      {loading && <p>Loading restaurants...</p>}
+      {error && <p className="text-red-500">{error}</p>}
+      {!loading && !error && <RestaurantList restaurants={restaurants} />}
     </div>
   );
 }
