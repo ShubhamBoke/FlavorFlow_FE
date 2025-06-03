@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/auth-context'; // Assuming you have an auth context
-import { getOrderList } from '@/lib/apiService';
+import { getOrderList, updateOrderStatus } from '@/lib/apiService';
 import { Order } from '@/lib/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { UserRole } from '@/lib/types';
+import { useToast } from "@/hooks/use-toast";
 
 const ViewOrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -16,22 +17,22 @@ const ViewOrdersPage = () => {
   const { user } = useAuth(); // Get user from auth context
   const [error, setError] = useState<string | null>(null);
   const [selectedStatus, setSelectedStatus] = useState('All');
+  const { toast } = useToast();
 
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      // Replace with your actual API endpoint to fetch orders
+      const data = await getOrderList();
+      setFilteredOrders(data.filter((order: Order) => selectedStatus === 'All' || order.orderStatus === selectedStatus)); // Initialize filtered orders based on default filter
+      setOrders(data);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        // Replace with your actual API endpoint to fetch orders
-        const data = await getOrderList();
-        setFilteredOrders(data.filter((order: Order) => selectedStatus === 'All' || order.orderStatus === selectedStatus)); // Initialize filtered orders based on default filter
-        setOrders(data);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchOrders();
   }, []);
 
@@ -48,8 +49,15 @@ const ViewOrdersPage = () => {
   const orderStatuses = ['All', 'PLACED', 'DISPATCHED', 'FULFILLED', 'CANCELED', ];
 
   // Function to handle order cancellation (placeholder)
-  const handleCancelOrder = (orderId: string) => {
-    console.log(`Cancelling order: ${orderId}`);
+  const handleCancelOrder = async (orderId: number) => {
+    try {
+      await updateOrderStatus(orderId, 'CANCELED');
+      fetchOrders(); // Refresh the list after successful cancellation
+      toast({ title: "Order Canceled!", description: "Sucessfully Cancelled Order with id: " + orderId });
+    } catch (err: any) {
+      console.log(err.message);
+      toast({ title: "Failed to Cancel Order!" + orderId, description: "Sucessfully Cancelled Order with id: " + orderId });
+    }
   };
 
   return (

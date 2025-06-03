@@ -250,3 +250,88 @@ export const getPaymentMethodList = async () => {
   }
 };
 
+export const addPaymentMethod = async (name: string) => {
+  try {
+    const jwtToken = localStorage.getItem('jwt_token');
+    const headers: HeadersInit = { "Content-Type": "application/json" };
+    if (jwtToken) {
+      headers['Authorization'] = `Bearer ${jwtToken}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/admin/addPaymentMethod?name=${name}`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        name: name
+      })
+    });
+
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      throw new Error(message);
+    }
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error("Failed to failed add payment method:", error);
+    throw error; // Re-throw the error so calling code can handle it
+  }
+};
+
+export const updatePaymentMethod = async (paymentMethodId: number, name: string) => {
+  try {
+    const jwtToken = localStorage.getItem('jwt_token');
+    const headers: HeadersInit = { "Content-Type": "application/json" };
+    if (jwtToken) {
+      headers['Authorization'] = `Bearer ${jwtToken}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/admin/updatePaymentMethod?paymentMethodId=${paymentMethodId}`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        name: name
+      })
+    });
+
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      throw new Error(message);
+    }
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error("Failed to update Payments Method", error);
+    throw error; // Re-throw the error so calling code can handle it
+  }
+};
+
+
+export const updateOrderStatus = async (orderId: number, orderStatus: string) => {
+  try {
+    const jwtToken = localStorage.getItem('jwt_token');
+    const headers: HeadersInit = { "Content-Type": "application/json" };
+    if (jwtToken) {
+      headers['Authorization'] = `Bearer ${jwtToken}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/updateOrderStatus?mealOrderId=${orderId}&orderStatus=${orderStatus}`, {
+      method: "POST",
+      headers: headers
+    });
+
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      throw new Error(message);
+    }
+
+    const data = await response.json();
+    return data;
+
+  } catch (error) {
+    console.error("Failed to update Order Status", error);
+    throw error; // Re-throw the error so calling code can handle it
+  }
+};
+

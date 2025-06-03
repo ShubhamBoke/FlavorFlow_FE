@@ -53,7 +53,7 @@ export interface Cart {
 }
 
 export interface Order {
-  id: string;
+  id: number;
   cart: Cart;
   paymentMethod: {
     id: number;
