@@ -1,21 +1,16 @@
-
+"use client";
 import type {Metadata} from 'next';
 import './globals.css';
 import { GlobalHeader } from '@/components/global-header';
 import { AuthProvider } from '@/contexts/auth-context';
 import { Toaster } from "@/components/ui/toaster";
-import { CartModal } from '@/components/cart-modal';
-
-export const metadata: Metadata = {
-  title: 'FlavorFlow - Your Culinary Journey Starts Here',
-  description: 'Order delicious food from your favorite local restaurants.',
-};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
   return (
     <html lang="en">
       <head>
@@ -33,7 +28,6 @@ export default function RootLayout({
             <footer className="py-4 sm:py-6 text-center text-muted-foreground border-t">
               © {new Date().getFullYear()} FlavorFlow. All rights reserved.
             </footer>
-            <CartModal />
             <Toaster />
         </AuthProvider>
       </body>

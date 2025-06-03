@@ -1,8 +1,6 @@
-
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter, SheetClose } from "@/components/ui/sheet";
@@ -10,23 +8,27 @@ import Image from "next/image";
 import { Trash2, PlusCircle, MinusCircle } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
-import { useEffect } from "react";
-import { fetchCartDetails } from "@/lib/apiService"; // Assuming fetchCartDetails is in apiService
-import { Cart } from "@/lib/types"; // Assuming Cart type is defined in types
+import { useState, useEffect } from "react";
+import { fetchCartDetails, removeCartItem } from "@/lib/apiService";
+import { Cart, CartItem } from "@/lib/types";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
-export function CartModal() {
+
+interface CartModalProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
+
+export function CartModal({ isOpen, onToggle }: CartModalProps) {
+  
   const [cart, setCart] = useState<Cart | null>(null);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>("credit-card");
   const { toast } = useToast();
 
-  const toggleCart = () => setIsCartOpen(!isCartOpen);
-  const setCartOpen = (isOpen: boolean) => setIsCartOpen(isOpen);
-
   useEffect(() => {
-    if (isCartOpen) {
+    
+    if (isOpen) {
       const getCart = async () => {
         try {
           const cartData = await fetchCartDetails();
@@ -38,7 +40,31 @@ export function CartModal() {
       };
       getCart();
     }
-  }, [isCartOpen, toast]);
+  }, [isOpen, toast]);
+
+  const clearCart = async () => {
+    if (!cart || cart.cartItemList.length === 0) {
+      toast({ title: "Cart is already empty" });
+      return;
+    }
+
+    try {
+      // Remove each item individually
+      const removePromises = cart.cartItemList.map(item =>
+        removeCartItem(item.id)
+      );
+
+      await Promise.all(removePromises);
+
+      setCart(null); // Clear the local state
+      toast({ title: "Cart Cleared", description: "Your cart has been emptied." });
+    } catch (error) {
+      console.error("Failed to clear cart:", error);
+      toast({ title: "Error clearing cart", description: "Could not clear your cart.", variant: "destructive" });
+    }
+  };
+
+
   const paymentMethods = [
     { value: "credit-card", label: "Credit Card" },
     { value: "paypal", label: "PayPal" },
@@ -46,7 +72,7 @@ export function CartModal() {
   ];
 
   return (
-    <Sheet open={isCartOpen} onOpenChange={toggleCart}>
+    <Sheet open={isOpen} onOpenChange={onToggle}>
       <SheetContent className="flex flex-col w-full sm:max-w-lg">
         <SheetHeader className="px-4 sm:px-6 pt-6">
           <SheetTitle className="font-headline text-xl sm:text-2xl">Your Cart ({cart?.cartItemList.length || 0})</SheetTitle>
@@ -57,34 +83,36 @@ export function CartModal() {
           ) : (
             <div className="space-y-4 py-4">
               {cart.cartItemList.map((item) => (
-                <div key={item.menuItem.id} className="flex items-center space-x-2 sm:space-x-4 p-2 rounded-lg border bg-card">
-                  {/* Placeholder functions - replace with actual API calls */}
-                  <Button variant="ghost" size="icon" onClick={() => { /* Call updateCartItemQuantity API */ }} disabled={item.quantity <= 1} className="h-8 w-8 sm:h-10 sm:w-10">
-                    <MinusCircle className="h-4 w-4" />
-                  </Button>
-                  <Input
-                    type="number"
-                    value={item.quantity}
-                    onChange={(e) => { /* Call updateCartItemQuantity API */ }}
-                    className="w-10 h-8 sm:w-12 sm:h-10 text-center"
-                    min="1"                  />
+                <div key={item.id} className="flex items-center justify-between space-x-2 sm:space-x-4 p-2 rounded-lg border bg-card">
                   <Image
-                    src={item.photoUrl || "https://placehold.co/64x64.png"}
-                    alt={item.name}
+                    src={item.menuItem.photoUrl || "https://placehold.co/64x64.png"}
+                    alt={item.menuItem.name}
                     width={64}
                     height={64}
                     className="rounded-md object-cover flex-shrink-0"
-                    data-ai-hint={item.dataAiHint || "food item"}
                   />
-                  <div className="flex-grow min-w-0">
+                  <div className="flex flex-col justify-center flex-grow min-w-0">
                     <h4 className="font-semibold truncate">{item.menuItem.name}</h4>
                     <p className="text-sm text-muted-foreground">${item.menuItem.price.toFixed(2)}</p>
                   </div>
-                  <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
+                  <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0 ml-auto">
+                    {/* Placeholder functions - replace with actual API calls */}
+                    {/* You'll need to implement the logic to update quantity using updateCartItemQuantity */}
+                    <Button variant="ghost" size="icon" onClick={() => { /* Call updateCartItemQuantity API */ }} disabled={item.quantity <= 1} className="h-8 w-8 sm:h-10 sm:w-10">
+                      <MinusCircle className="h-4 w-4" />
+                    </Button>
+                    <Input
+                      type="number"
+                      value={item.quantity}
+                      onChange={(e) => { /* Call updateCartItemQuantity API */ }}
+                      className="w-10 h-8 sm:w-12 sm:h-10 text-center"
+                      min="1"
+                    />
                     <Button variant="ghost" size="icon" onClick={() => { /* Call updateCartItemQuantity API */ }} className="h-8 w-8 sm:h-10 sm:w-10">
                       <PlusCircle className="h-4 w-4" />
                     </Button>
                   </div>
+                  {/* Placeholder functions - replace with actual API calls */}
                   <Button variant="ghost" size="icon" onClick={() => { /* Call removeCartItem API */ }} className="text-destructive h-8 w-8 sm:h-10 sm:w-10">
                     <Trash2 className="h-4 w-4" />
 
@@ -111,7 +139,7 @@ export function CartModal() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <SheetFooter className="px-4 sm:px-6 pt-4 pb-6 space-y-4 border-t">
               <div className="flex justify-between items-center font-semibold text-base sm:text-lg">
                 <span>Total:</span> {/* This total should come from the backend */}

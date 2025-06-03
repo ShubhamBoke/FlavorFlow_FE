@@ -27,6 +27,50 @@ export const fetchRestaurants = async () => {
   }
 };
 
+export const updateCartItemQuantity = async (cartItemId: number, quantity: number) => {
+  try {
+    const jwtToken = localStorage.getItem('jwt_token');
+    const headers: HeadersInit = { "Content-Type": "application/json" };
+    if (jwtToken) {
+      headers['Authorization'] = `Bearer ${jwtToken}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/updateCartItemQuantity?cartItemId=${cartItemId}&quantity=${quantity}`, {
+      method: "POST",
+      headers: headers,
+    });
+
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      throw new Error(message);
+    }
+  } catch (error) {
+    console.error("Failed to update cart item quantity:", error);
+    throw error;
+  }
+};
+
+export const removeCartItem = async (cartItemId: number) => {
+  try {
+    const jwtToken = localStorage.getItem('jwt_token');
+    const headers: HeadersInit = { "Content-Type": "application/json" };
+    if (jwtToken) {
+      headers['Authorization'] = `Bearer ${jwtToken}`;
+    }
+    const response = await fetch(`${API_BASE_URL}/removeCartItem?cartItemId=${cartItemId}`, {
+      method: "DELETE",
+      headers: headers,
+    });
+
+    if (!response.ok) {
+      const message = `An error occurred: ${response.statusText}`;
+      throw new Error(message);
+    }
+  } catch (error) {
+    console.error("Failed to remove cart item:", error);
+    throw error;
+  }
+};
+
 export const fetchRestaurantById = async (id: number) => {
   try {
     const jwtToken = localStorage.getItem('jwt_token');

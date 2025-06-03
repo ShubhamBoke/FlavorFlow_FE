@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription }
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
+import { addItemToCart } from "@/lib/apiService";
 
 interface MenuItemCardProps {
   item: MenuItem;
@@ -16,11 +16,23 @@ export function MenuItemCard({ item }: MenuItemCardProps) {
   const { toast } = useToast();
 
   const handleAddToCart = () => {
-    // Call add to cart
-    toast({
-      title: `${item.name} added to cart!`,
-      description: "You can view your cart by clicking the cart icon in the header.",
-    });
+    
+    const addItem = async () => {
+      try {
+        await addItemToCart(item.id, 1);
+        toast({
+          title: `${item.name} added to cart!`,
+          description: "You can view your cart by clicking the cart icon in the header.",
+        });
+      } catch (error) {
+        console.error("Failed to add item to cart:", error);
+        toast({
+          title: `Failed to added to cart!`,
+        });
+      }
+    };
+    addItem();
+    
   };
 
   return (

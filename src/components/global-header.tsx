@@ -17,18 +17,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { ShoppingCart, User, LogIn, LogOut, Utensils, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
-import { fetchCartDetails } from "@/lib/apiService"; // Assuming this function exists
-import { Cart } from "@/lib/types"; // Assuming you have a Cart type
+import { CartModal } from "./cart-modal";
+
 
 export function GlobalHeader() {
+
   const { user, logout, loading } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
-  const [cartItemCount, setCartItemCount] = useState(0);
 
-  // Assuming toggleCart is managed elsewhere, e.g., a global UI state context
-  // Replace with your actual toggleCart implementation if needed
-  const toggleCart = () => { console.log("Toggle cart placeholder"); };
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout(); 
@@ -36,7 +34,6 @@ export function GlobalHeader() {
 
   const handleCartClick = () => {
     if (loading) return; // Prevent action while auth state is loading
-
     if (!user) {
       toast({
         title: "Login Required",
@@ -45,21 +42,9 @@ export function GlobalHeader() {
       });
       return;
     }
-    toggleCart();
+    const onToggleCart = () => setIsCartOpen(!isCartOpen);
+    onToggleCart();
   };
-
-  useEffect(() => {
-    const getCartItemCount = async () => {
-      if (user) {
-        try {
-          const cart: Cart = await fetchCartDetails();
-          setCartItemCount(cart.cartItemList.reduce((total, item) => total + item.quantity, 0));
-        } catch (error) {
-          console.error("Failed to fetch cart details:", error);
-        }
-      } else { setCartItemCount(0); }
-    }; getCartItemCount();
-  });
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -77,13 +62,9 @@ export function GlobalHeader() {
             aria-disabled={!user && !loading} // Accessibility hint
           >
             <ShoppingCart className="h-5 w-5" />
-            {cartItemCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                {cartItemCount}
-              </span>
-            )}
             <span className="sr-only">Open Cart</span>
           </Button>
+          <CartModal isOpen={isCartOpen} onToggle={() => setIsCartOpen(!isCartOpen)}/>
           {loading ? (
              <div className="h-8 w-20 animate-pulse bg-muted rounded-md" />
           ) : user ? (
@@ -125,6 +106,7 @@ export function GlobalHeader() {
           )}
         </nav>
       </div>
+      {/* Conditionally render CartModal based on isCartOpen */}
     </header>
   );
 }
