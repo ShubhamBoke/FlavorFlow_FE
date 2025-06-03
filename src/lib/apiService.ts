@@ -35,7 +35,7 @@ export const updateCartItemQuantity = async (cartItemId: number, quantity: numbe
       headers['Authorization'] = `Bearer ${jwtToken}`;
     }
     const response = await fetch(`${API_BASE_URL}/updateCartItemQuantity?cartItemId=${cartItemId}&quantity=${quantity}`, {
-      method: "POST",
+      method: "PUT",
       headers: headers,
     });
 
