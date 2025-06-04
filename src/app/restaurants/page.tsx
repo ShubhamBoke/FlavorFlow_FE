@@ -16,7 +16,7 @@ export default function RestaurantsPage() {
         const data = await fetchRestaurants();
         setRestaurants(data);
       } catch (err) {
-        setError('Failed to fetch restaurants.');
+        setError('No Restaurants available !');
         console.error(err);
       } finally {
         setLoading(false);
