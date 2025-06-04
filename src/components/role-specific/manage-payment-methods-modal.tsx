@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -13,13 +14,19 @@ import { Input } from "@/components/ui/input";
 import { CreditCard } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getPaymentMethodList, addPaymentMethod, updatePaymentMethod } from "@/lib/apiService";
-import { PaymentMethod } from "@/lib/types";
+import { PaymentMethod, UserRole } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
+import { AuthUser } from "@/contexts/auth-context";
 
-export function ManagePaymentMethodsModal() {
+interface Prop {
+  user: AuthUser
+}
+
+export function ManagePaymentMethodsModal({user}: Prop) {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [newPaymentMethodName, setNewPaymentMethodName] = useState('');
   const [editedPaymentMethods, setEditedPaymentMethods] = useState<{ [key: number]: string }>({});
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
 
   const fetchPaymentMethods = async () => {
@@ -36,9 +43,11 @@ export function ManagePaymentMethodsModal() {
   };
 
   useEffect(() => {
-    fetchPaymentMethods();
-    setEditedPaymentMethods({}); // Clear editing state when modal opens
-  }, []);
+    if (dialogOpen) {
+      fetchPaymentMethods();
+      setEditedPaymentMethods({}); // Clear editing state when modal opens/refreshes
+    }
+  }, [dialogOpen, toast]);
 
   const handleAddPaymentMethod = async () => {
     if (!newPaymentMethodName.trim()) {
@@ -67,6 +76,14 @@ export function ManagePaymentMethodsModal() {
   };
 
   const handleUpdatePaymentMethod = async (id: number, name: string) => {
+    if (!name.trim()) {
+      toast({
+        title: "Input required.",
+        description: "Payment method name cannot be empty.",
+        variant: "destructive"
+      });
+      return;
+    }
     try {
       await updatePaymentMethod(id, name);
       toast({
@@ -93,9 +110,9 @@ export function ManagePaymentMethodsModal() {
 
 
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button disabled={user.role !== UserRole.Admin} variant="outline">
           <CreditCard className="mr-2 h-4 w-4" /> Manage Payment Methods
         </Button>
       </DialogTrigger>

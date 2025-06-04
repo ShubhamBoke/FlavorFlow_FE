@@ -38,21 +38,10 @@ export function UserDashboard() {
         <CardContent className="space-y-4">
           <h3 className="font-semibold text-lg">Your Actions:</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Member specific actions */}
-            {(user.role === UserRole.Member || user.role === UserRole.Manager || user.role === UserRole.Admin) && (
-              <>
-                <Button variant="outline" onClick={() => {router.push('/orders')}}><ShoppingBag className="mr-2 h-4 w-4" /> My Orders</Button>
-                <ManagePaymentMethodsModal />
-              </>
-            )}
-
-            {/* Manager specific actions */}
-            {(user.role === UserRole.Manager || user.role === UserRole.Admin) && (
-              <>
-                <AddMenuItemModal />
-                <AddRestaurantModal />
-              </>
-            )}
+            <Button disabled={user.role === UserRole.Member} variant="outline" onClick={() => {router.push('/orders')}}><ShoppingBag className="mr-2 h-4 w-4" /> My Orders</Button>
+            <AddRestaurantModal user={user} />
+            <AddMenuItemModal user={user} />
+            <ManagePaymentMethodsModal user={user} />
           </div>
           {/* Placeholder for CancelOrderModal if it needs to be generally available or triggered by specific order context */}
           {/* <CancelOrderModal /> This would typically be part of an "My Orders" list item */}

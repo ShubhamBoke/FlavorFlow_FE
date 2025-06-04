@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -22,14 +23,15 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
 import { fetchRestaurants, addMenuItem } from "@/lib/apiService"; // Assuming addMenuItem exists
-import { Restaurant, MenuItem } from "@/lib/types";
+import { Restaurant, MenuItem, UserRole } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
+import { AuthUser } from "@/contexts/auth-context";
 
-interface AddMenuItemModalProps {
-  onMenuItemAdded?: () => void;
+interface Props {
+  user: AuthUser;
 }
 
-export function AddMenuItemModal({ onMenuItemAdded }: AddMenuItemModalProps) {
+export function AddMenuItemModal({ user }: Props) {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [selectedRestaurantId, setSelectedRestaurantId] = useState<string>("");
   const [menuItemData, setMenuItemData] = useState<Partial<MenuItem>>({
@@ -40,23 +42,26 @@ export function AddMenuItemModal({ onMenuItemAdded }: AddMenuItemModalProps) {
     photoUrl: "",
   });
   const [loading, setLoading] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const getRestaurants = async () => {
-      try {
-        const data = await fetchRestaurants();
-        setRestaurants(data);
-      } catch (error: any) {
-        toast({
-          title: "Error fetching restaurants.",
-          description: error.message,
-          variant: "destructive",
-        });
-      }
-    };
-    getRestaurants();
-  }, [toast]);
+    if (dialogOpen) {
+      const getRestaurants = async () => {
+        try {
+          const data = await fetchRestaurants();
+          setRestaurants(data);
+        } catch (error: any) {
+          toast({
+            title: "Error fetching restaurants.",
+            description: error.message,
+            variant: "destructive",
+          });
+        }
+      };
+      getRestaurants();
+    }
+  }, [dialogOpen, toast]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
@@ -106,9 +111,8 @@ export function AddMenuItemModal({ onMenuItemAdded }: AddMenuItemModalProps) {
         rating: 0,
         photoUrl: "",
       });
-      if (onMenuItemAdded) {
-        onMenuItemAdded();
-      }
+      // Optionally close the dialog on success
+      // setDialogOpen(false); 
     } catch (error: any) {
       toast({
         title: "Error adding menu item.",
@@ -121,9 +125,9 @@ export function AddMenuItemModal({ onMenuItemAdded }: AddMenuItemModalProps) {
   };
 
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Add New Menu Item</Button>
+        <Button disabled={user.role !== UserRole.Admin && user.role !== UserRole.Manager} variant="outline">Add New Menu Item</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -190,6 +194,30 @@ export function AddMenuItemModal({ onMenuItemAdded }: AddMenuItemModalProps) {
                 step="0.1"
                 min="0"
                 max="5"
+              />
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="photoUrl" className="text-right">
+                Photo URL
+              </Label>
+              <Input
+                id="photoUrl"
+                value={menuItemData.photoUrl || ""}
+                onChange={handleInputChange}
+                className="col-span-3"
+                placeholder="https://placehold.co/300x200.png"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="description" className="text-right">
+                Description
+              </Label>
+              <Textarea
+                id="description"
+                value={menuItemData.description || ""}
+                onChange={handleInputChange}
+                className="col-span-3"
+                placeholder="Brief description of the menu item."
               />
             </div>
           </div>

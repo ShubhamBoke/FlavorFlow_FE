@@ -24,9 +24,15 @@ import {
 } from "@/components/ui/select"
 import { addRestaurant } from "@/lib/apiService";
 import { useToast } from "@/hooks/use-toast";
+import { UserRole } from "@/lib/types";
+import { AuthUser } from "@/contexts/auth-context";
+
+interface Props {
+  user: AuthUser;
+}
 
 
-export function AddRestaurantModal() {
+export function AddRestaurantModal({user}: Props) {
 
   const { toast } = useToast();
 
@@ -72,7 +78,7 @@ export function AddRestaurantModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button variant="outline" disabled={user.role !== UserRole.Admin}>
           <Utensils className="mr-2 h-4 w-4" /> Add New Restaurant
         </Button>
       </DialogTrigger>
