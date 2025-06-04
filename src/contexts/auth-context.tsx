@@ -1,5 +1,5 @@
 "use client";
-import type { UserRole } from '@/lib/types';
+import { UserRole } from '@/lib/types';
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -80,9 +80,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     router.push('/login'); // Redirect to login after logout
   };
 
-  const register = async (firstName: string, lastName: string, email: string, password?: string, role: UserRole = UserRole.Member) => {
+  const register = async (firstName: string, lastName: string, email: string, password: string, role: UserRole) => {
     // In a real app, you'd send this to a backend.
-    const res = await fetch(`${BASE_URL}/register${role}`, {
+    let roleEndpoint = 'Member';
+    if (role === UserRole.Admin) roleEndpoint = 'Admin';
+    if (role === UserRole.Manager) roleEndpoint = 'Manager';
+    if (role === UserRole.Member) roleEndpoint = 'Member';
+    const res = await fetch(`${BASE_URL}/register${roleEndpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

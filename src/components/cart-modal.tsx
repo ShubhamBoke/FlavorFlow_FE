@@ -10,17 +10,19 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState, useEffect } from "react";
 import { fetchCartDetails, removeCartItem, updateCartItemQuantity, placeOrder, getPaymentMethodList } from "@/lib/apiService";
-import { Cart, PaymentMethod} from "@/lib/types";
+import { Cart, PaymentMethod, UserRole} from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { AuthUser } from "@/contexts/auth-context";
 
 
 interface CartModalProps {
   isOpen: boolean;
   onToggle: () => void;
+  user: AuthUser | null;
 }
 
-export function CartModal({ isOpen, onToggle }: CartModalProps) {
+export function CartModal({ isOpen, onToggle, user }: CartModalProps) {
   
   const [cart, setCart] = useState<Cart | null>(null);
   const [paymentMethodList, setPaymentMethodList] = useState<PaymentMethod[]>([{id: 1, name: "COD"}]);
@@ -127,6 +129,7 @@ export function CartModal({ isOpen, onToggle }: CartModalProps) {
     try {
       const paymentMethodId = selectedPaymentMethod.id;
       await placeOrder(paymentMethodId);
+      toast({ title: "Order placed Successfully!"});
     } catch (error) {
       console.error("Failed to place order:", error);
       toast({ title: "Error placing order", description: "Could not place your order.", variant: "destructive" });
@@ -212,7 +215,7 @@ export function CartModal({ isOpen, onToggle }: CartModalProps) {
               </div>
               <Button onClick={clearCart} variant="outline" className="w-full">Clear Cart</Button>
               <SheetClose asChild>
-                <Button onClick={handleCheckout} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Checkout</Button>
+                <Button disabled={!user || (user?.role !== UserRole.Admin && user?.role !== UserRole.Manager)} onClick={handleCheckout} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">Checkout</Button>
               </SheetClose>
             </SheetFooter>
           </>

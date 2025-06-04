@@ -64,7 +64,7 @@ export function GlobalHeader() {
             <ShoppingCart className="h-5 w-5" />
             <span className="sr-only">Open Cart</span>
           </Button>
-          <CartModal isOpen={isCartOpen} onToggle={() => setIsCartOpen(!isCartOpen)}/>
+          <CartModal isOpen={isCartOpen} onToggle={() => setIsCartOpen(!isCartOpen)} user={user}/>
           {loading ? (
              <div className="h-8 w-20 animate-pulse bg-muted rounded-md" />
           ) : user ? (

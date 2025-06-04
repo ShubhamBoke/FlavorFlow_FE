@@ -7,8 +7,8 @@ import { AddRestaurantModal } from "@/components/role-specific/add-restaurant-mo
 import { ManagePaymentMethodsModal } from "@/components/role-specific/manage-payment-methods-modal";
 import { AddMenuItemModal } from "@/components/role-specific/add-menu-item-modal";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Archive, Settings, ShoppingBag } from "lucide-react";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { ShoppingBag } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function UserDashboard() {
@@ -43,9 +43,8 @@ export function UserDashboard() {
             <AddMenuItemModal user={user} />
             <ManagePaymentMethodsModal user={user} />
           </div>
-          {/* Placeholder for CancelOrderModal if it needs to be generally available or triggered by specific order context */}
-          {/* <CancelOrderModal /> This would typically be part of an "My Orders" list item */}
         </CardContent>
+        <CardFooter></CardFooter>
       </Card>
     </div>
   );
